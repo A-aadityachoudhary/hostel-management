@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  room_number: MyString
+  capacity: 1
+  floor: 1
+  block: one
+
+two:
+  room_number: MyString
+  capacity: 1
+  floor: 1
+  block: two
