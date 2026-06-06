@@ -1,0 +1,26 @@
+<h1 class="text-2xl font-bold">Hostel Dashboard</h1>
+
+<table class="w-full border-collapse border border-gray-300 mt-4">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="border p-2">Room Number</th>
+      <th class="border p-2">Status</th>
+      <th class="border p-2">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @rooms.each do |room| %>
+      <tr>
+        <td class="border p-2 text-center"><%= room.room_number %></td>
+        <td class="border p-2 text-center">
+          <%= room.available? ? "Available" : "Occupied" %>
+        </td>
+        <td class="border p-2 text-center">
+          <% if room.available? %>
+            <%= link_to "Allocate", "#", class: "text-blue-500" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

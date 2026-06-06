@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "admin/index"
   get "allocations/create"
   get "users/new"
   get "users/create"

@@ -1,9 +1,10 @@
 class ApplicationController < ActionController::Base
-  before_action :authorize_admin!, only: [:create]
   helper_method :current_user, :logged_in?
 
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  rescue ActiveRecord::RecordNotFound
+    session[:user_id] = nil
   end
 
   def logged_in?
@@ -11,8 +12,10 @@ class ApplicationController < ActionController::Base
   end
 
   def authorize_admin!
+    # Only redirect if not already logged in as admin
     unless current_user&.admin?
-      redirect_to root_path, alert: "Not authorized!"
+      flash[:alert] = "You must be an admin to access this."
+      redirect_to login_path # Redirect to login instead of root
     end
   end
 end
