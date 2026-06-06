@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  before_action :authorize_admin!, only: [:create]
   helper_method :current_user, :logged_in?
 
   def current_user
@@ -7,5 +8,11 @@ class ApplicationController < ActionController::Base
 
   def logged_in?
     !!current_user
+  end
+
+  def authorize_admin!
+    unless current_user&.admin?
+      redirect_to root_path, alert: "Not authorized!"
+    end
   end
 end
