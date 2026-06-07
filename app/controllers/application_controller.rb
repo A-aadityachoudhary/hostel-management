@@ -11,11 +11,19 @@ class ApplicationController < ActionController::Base
     !!current_user
   end
 
+  # Added this to prevent the NoMethodError in your StaffDashboardController
+  def require_login
+    unless logged_in?
+      flash[:alert] = "You must be logged in to access this page."
+      redirect_to login_path
+    end
+  end
+
   def authorize_admin!
-    # Only redirect if not already logged in as admin
+    # Ensure user is logged in AND is an admin
     unless current_user&.admin?
       flash[:alert] = "You must be an admin to access this."
-      redirect_to login_path # Redirect to login instead of root
+      redirect_to login_path
     end
   end
 end

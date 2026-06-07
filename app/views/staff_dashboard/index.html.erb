@@ -1,0 +1,14 @@
+</div><h1 class="text-2xl font-bold">My Assigned Tasks</h1>
+
+<table class="w-full mt-4 border-collapse border border-gray-300">
+  <tr class="bg-gray-100">
+    <th class="border p-2">Task Title</th>
+    <th class="border p-2">Current Status</th>
+  </tr>
+  <% @my_tasks.each do |task| %>
+    <tr>
+      <td class="border p-2"><%= task.title %></td>
+      <td class="border p-2 font-semibold text-blue-600"><%= task.status.humanize %></td>
+    </tr>
+  <% end %>
+</table>

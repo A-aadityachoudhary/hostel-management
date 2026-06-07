@@ -1,0 +1,44 @@
+<h1 class="text-2xl font-bold mb-6">Staff Task Management</h1>
+
+<div class="flex gap-8">
+  <div class="w-1/3 bg-gray-50 p-4 rounded border">
+    <h2 class="font-bold mb-4">Select Staff Member</h2>
+    <% @staff_members.each do |staff| %>
+      <%= link_to staff.name, tasks_path(staff_id: staff.id), 
+          class: "block p-2 mb-2 bg-white border rounded hover:bg-blue-100 #{'border-blue-500' if @selected_staff == staff}" %>
+    <% end %>
+  </div>
+
+  <div class="w-2/3">
+    <% if @selected_staff %>
+      <div class="bg-white p-6 rounded shadow border">
+        <h2 class="text-xl font-bold mb-4">Tasks for <%= @selected_staff.name %></h2>
+        
+        <%= form_with model: @task, class: "mb-6 p-4 bg-gray-100 rounded" do |f| %>
+          <%= f.hidden_field :staff_id %>
+          <%= f.text_field :title, placeholder: "New task title", required: true, class: "border p-2" %>
+          <%= f.submit "Add Task", class: "bg-green-600 text-white px-4 py-2 rounded" %>
+        <% end %>
+
+        <table class="w-full">
+          <% @tasks.each do |task| %>
+            <tr class="border-b">
+              <td class="p-2"><%= task.title %></td>
+              <td class="p-2">
+                <%= form_with model: task do |f| %>
+                  <%= f.select :status, Task.statuses.keys.map { |s| [s.humanize, s] } %>
+                  <%= f.submit "Update", class: "text-sm bg-blue-500 text-white px-2 py-1 rounded" %>
+                <% end %>
+              </td>
+              <td class="p-2">
+                <%= button_to "Delete", task_path(task), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-500 text-sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-center mt-10">Select a staff member from the list to manage their tasks.</p>
+    <% end %>
+  </div>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_174845) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_162309) do
   create_table "allocations", force: :cascade do |t|
     t.date "check_in_date"
     t.date "check_out_date"
@@ -38,6 +38,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_174845) do
     t.string "room_number"
     t.datetime "updated_at", null: false
     t.index ["block_id"], name: "index_rooms_on_block_id"
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.integer "admin_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "staff_id"
+    t.integer "status"
+    t.string "title"
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

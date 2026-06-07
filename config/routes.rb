@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "staff_dashboard/index"
   get "profile/show"
   get "admin/index"
   get "allocations/create"
@@ -15,4 +16,7 @@ Rails.application.routes.draw do
   post 'users', to: 'users#create'
   resources :allocations, only: [:create, :update]
   get 'my_room', to: 'profile#show'
+  get 'staff/dashboard', to: 'staff_dashboard#index', as: :staff_dashboard
+  # config/routes.rb
+  resources :tasks, only: [:index, :create, :update, :destroy]
 end
