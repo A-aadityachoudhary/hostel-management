@@ -4,21 +4,44 @@
   <thead>
     <tr class="bg-gray-100">
       <th class="border p-2">Room Number</th>
-      <th class="border p-2">Status</th>
+      <th class="border p-2">Occupants</th>
       <th class="border p-2">Action</th>
     </tr>
   </thead>
   <tbody>
     <% @rooms.each do |room| %>
       <tr>
-        <td class="border p-2 text-center"><%= room.room_number %></td>
-        <td class="border p-2 text-center">
-          <%= room.available? ? "Available" : "Occupied" %>
-        </td>
-        <td class="border p-2 text-center">
-          <% if room.available? %>
-            <%= link_to "Allocate", "#", class: "text-blue-500" %>
+        <td class="border p-2 font-bold"><%= room.room_number %></td>
+        <td class="border p-2">
+          <% active_allocs = room.allocations.where(status: :active) %>
+          <% if active_allocs.any? %>
+            <ul class="list-disc ml-4">
+              <% active_allocs.each do |alloc| %>
+                <li><%= alloc.student&.name %></li>
+              <% end %>
+            </ul>
+          <% else %>
+            <span class="text-gray-400">Empty</span>
           <% end %>
+        </td>
+        <td class="border p-2">
+          <% if active_allocs.count < 2 %>
+            <%= form_with model: Allocation.new, id: "alloc_#{room.id}" do |f| %>
+              <%= f.hidden_field :room_id, value: room.id %>
+              <% available_students = User.where(role: :student).where.not(id: Allocation.where(status: :active).select(:student_id)) %>
+              <%= f.collection_select :student_id, available_students, :id, :name, { prompt: "Select Student" }, { required: true } %>
+              <%= f.submit "Allocate", class: "bg-blue-500 text-white px-2 py-1 rounded ml-2" %>
+            <% end %>
+          <% else %>
+            <span class="text-red-500 font-semibold">Full</span>
+          <% end %>
+          
+          <%# Show check-out links for each occupant %>
+          <div class="mt-2">
+            <% active_allocs.each do |alloc| %>
+              <%= button_to "Check Out #{alloc.student&.name}", allocation_path(alloc), method: :patch, class: "text-red-500 underline text-sm block" %>
+            <% end %>
+          </div>
         </td>
       </tr>
     <% end %>

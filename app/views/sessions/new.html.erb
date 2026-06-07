@@ -1,2 +1,29 @@
-<h1>Sessions#new</h1>
-<p>Find me in app/views/sessions/new.html.erb</p>
+<div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+
+    <% if flash[:alert] %>
+      <div class="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: login_path, method: :post, local: true do |f| %>
+      <div class="mb-4">
+        <%= f.label :email, class: "block text-sm font-medium mb-1" %>
+        <%= f.email_field :email, class: "w-full border rounded p-2", required: true %>
+      </div>
+
+      <div class="mb-6">
+        <%= f.label :password, class: "block text-sm font-medium mb-1" %>
+        <%= f.password_field :password, class: "w-full border rounded p-2", required: true %>
+      </div>
+
+      <%= f.submit "Login", class: "w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 cursor-pointer" %>
+    <% end %>
+
+    <p class="mt-4 text-center text-sm">
+      Don't have an account? <%= link_to "Sign up", signup_path, class: "text-blue-500 hover:underline" %>
+    </p>
+  </div>
+</div>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "profile/show"
   get "admin/index"
   get "allocations/create"
   get "users/new"
@@ -12,4 +13,6 @@ Rails.application.routes.draw do
   
   get 'signup', to: 'users#new'
   post 'users', to: 'users#create'
+  resources :allocations, only: [:create, :update]
+  get 'my_room', to: 'profile#show'
 end

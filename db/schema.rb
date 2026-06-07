@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_122033) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_174845) do
   create_table "allocations", force: :cascade do |t|
     t.date "check_in_date"
     t.date "check_out_date"
@@ -50,6 +50,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_122033) do
   end
 
   add_foreign_key "allocations", "rooms"
-  add_foreign_key "allocations", "students"
   add_foreign_key "rooms", "blocks"
 end
