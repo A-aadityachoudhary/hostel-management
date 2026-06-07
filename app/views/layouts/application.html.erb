@@ -3,60 +3,49 @@
   <head>
     <title><%= content_for(:title) || "Hostel Management" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Hostel Management">
-    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <nav class="bg-gray-800 p-4 text-white">
+  <%# The body inherits the radial gradient defined in CSS %>
+  <body class="font-sans antialiased min-h-screen">
+    
+    <%# Navbar now has a transparent background to let the gradient pop through %>
+    <nav class="bg-transparent p-6 text-white">
       <div class="container mx-auto flex items-center justify-between">
-        <%= link_to "HostelSystem", root_path, class: "font-bold text-xl hover:text-gray-300" %>
-
-        <div class="flex items-center space-x-6">
+        <%= link_to "HostelSystem", root_path, class: "font-bold text-2xl tracking-tight hover:opacity-80 transition" %>
+        
+        <div class="flex items-center space-x-8 text-lg font-medium">
           <% if logged_in? %>
-            <%= link_to "Home", root_path, class: "hover:text-gray-300" %>
+            <%= link_to "Home", root_path, class: "hover:text-pink-200 transition" %>
 
-            <%# Admin and Staff Task Links %>
             <% if current_user.admin? %>
-              <%= link_to "Admin Dashboard", admin_index_path, class: "hover:text-gray-300" %>
-              <%= link_to "Manage Tasks", tasks_path, class: "hover:text-gray-300" %>
+              <%= link_to "Admin Dashboard", admin_index_path, class: "hover:text-pink-200 transition" %>
+              <%= link_to "Manage Tasks", tasks_path, class: "hover:text-pink-200 transition" %>
             <% elsif current_user.staff? %>
-              <%= link_to "My Tasks", staff_dashboard_path, class: "hover:text-gray-300" %>
+              <%= link_to "My Tasks", staff_dashboard_path, class: "hover:text-pink-200 transition" %>
             <% end %>
 
-            <%# Student Links %>
             <% if current_user.student? %>
-              <%= link_to "My Room", my_room_path, class: "hover:text-gray-300" %>
+              <%= link_to "My Room", my_room_path, class: "hover:text-pink-200 transition" %>
             <% end %>
 
-            <%= button_to "Logout", logout_path, method: :delete, class: "text-red-400 hover:text-red-300" %>
+            <%= button_to "Logout", logout_path, method: :delete, class: "bg-white/20 px-5 py-2 rounded-full hover:bg-white/30 transition" %>
           <% else %>
-            <%= link_to "Login", login_path, class: "hover:text-gray-300" %>
-            <%= link_to "Sign Up", signup_path, class: "bg-blue-600 px-4 py-2 rounded hover:bg-blue-700" %>
+            <%= link_to "Login", login_path, class: "hover:text-pink-200 transition" %>
+            <%= link_to "Sign Up", signup_path, class: "bg-pink-600 px-6 py-2 rounded-full hover:bg-pink-700 transition shadow-lg" %>
           <% end %>
         </div>
       </div>
     </nav>
     
-    <main class="container mx-auto p-4">
-      <% if flash[:notice] %><div class="bg-green-100 p-2 mb-4"><%= flash[:notice] %></div><% end %>
-      <% if flash[:alert] %><div class="bg-red-100 p-2 mb-4"><%= flash[:alert] %></div><% end %>
+    <main class="container mx-auto p-6">
+      <%# Semi-transparent flash messages to match the modern look %>
+      <% if flash[:notice] %><div class="bg-green-500/80 text-white p-4 rounded-xl mb-6 shadow-md"><%= flash[:notice] %></div><% end %>
+      <% if flash[:alert] %><div class="bg-red-500/80 text-white p-4 rounded-xl mb-6 shadow-md"><%= flash[:alert] %></div><% end %>
+      
       <%= yield %>
     </main>
   </body>

@@ -8,3 +8,12 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+@layer base {
+  body {
+    /* Replicating the purple-to-pink blob gradient from Screenshot from 2026-06-08 00-07-04.png */
+    background: radial-gradient(circle at 10% 20%, rgb(200, 20, 150) 0%, rgb(100, 20, 150) 90%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: white; /* Default text color for the dark/vibrant theme */
+  }
+}
