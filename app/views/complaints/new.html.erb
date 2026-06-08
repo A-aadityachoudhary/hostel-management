@@ -1,0 +1,30 @@
+<div class="max-w-5xl mx-auto mt-10">
+  <h1 class="text-3xl font-bold text-white mb-6">File a Complaint</h1>
+  
+  <%# Complaint Form %>
+  <div class="bg-black/20 p-6 rounded-2xl border border-white/10 mb-10">
+    <%= form_with model: Complaint.new, url: complaints_path, class: "space-y-4" do |f| %>
+      <%= f.text_area :message, placeholder: "Describe your issue here...", class: "w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white" %>
+      <%= f.submit "Submit Complaint", class: "bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg font-bold transition" %>
+    <% end %>
+  </div>
+
+  <h2 class="text-2xl font-bold text-white mb-6">My Complaint History</h2>
+  
+  <div class="space-y-4">
+    <% @complaints.each do |complaint| %>
+      <div class="bg-black/20 p-6 rounded-2xl border border-white/10">
+        <p class="text-white/70 italic">"<%= complaint.message %>"</p>
+        
+        <div class="mt-4 pt-4 border-t border-white/10">
+          <% if complaint.reply.present? %>
+            <p class="text-pink-300 font-bold text-sm">Admin Reply:</p>
+            <p class="text-white"><%= complaint.reply %></p>
+          <% else %>
+            <p class="text-white/40 text-sm italic">No reply yet.</p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

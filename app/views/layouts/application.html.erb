@@ -16,7 +16,7 @@
     <nav class="bg-transparent p-6 text-white">
       <div class="container mx-auto flex items-center justify-between">
         <%= link_to "HostelSystem", root_path, class: "font-bold text-2xl tracking-tight hover:opacity-80 transition" %>
-        
+
         <div class="flex items-center space-x-8 text-lg font-medium">
           <% if logged_in? %>
             <%= link_to "Home", root_path, class: "hover:text-pink-200 transition" %>
@@ -24,12 +24,18 @@
             <% if current_user.admin? %>
               <%= link_to "Admin Dashboard", admin_index_path, class: "hover:text-pink-200 transition" %>
               <%= link_to "Manage Tasks", tasks_path, class: "hover:text-pink-200 transition" %>
+              <%# Admin reads complaints %>
+              <%= link_to "View Complaints", complaints_path, class: "hover:text-pink-200 transition " %>
             <% elsif current_user.staff? %>
               <%= link_to "My Tasks", staff_dashboard_path, class: "hover:text-pink-200 transition" %>
+              <%# Staff submits complaints %>
+              <%= link_to "File Complaint", new_complaint_path, class: "hover:text-pink-200 transition" %>
             <% end %>
 
             <% if current_user.student? %>
               <%= link_to "My Room", my_room_path, class: "hover:text-pink-200 transition" %>
+              <%# Student submits complaints %>
+              <%= link_to "File Complaint", new_complaint_path, class: "hover:text-pink-200 transition" %>
             <% end %>
 
             <%= button_to "Logout", logout_path, method: :delete, class: "bg-white/20 px-5 py-2 rounded-full hover:bg-white/30 transition" %>

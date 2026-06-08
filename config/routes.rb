@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "complaints/new"
+  get "complaints/create"
+  get "complaints/index"
   get "rooms/new"
   get "rooms/create"
   get "staff_dashboard/index"
@@ -25,4 +28,5 @@ Rails.application.routes.draw do
   resources :blocks
   resources :rooms
   resources :allocations
+  resources :complaints, only: [:index, :new, :create, :destroy, :update]
 end
