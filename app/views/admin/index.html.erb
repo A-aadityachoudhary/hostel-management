@@ -1,19 +1,29 @@
 <div class="max-w-5xl mx-auto">
-  <h1 class="text-4xl font-bold mb-8 text-white">Hostel Dashboard</h1>
+  <%# Header Section %>
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold text-white">Hostel Dashboard</h1>
+    
+    <%# Updated path to non-nested rooms path %>
+    <%= link_to "Add New Room", new_room_path, class: "bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-full font-bold transition shadow-lg flex items-center gap-2" %>
+  </div>
 
+  <%# Room Grid %>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <% @rooms.each do |room| %>
       <% active_allocs = room.allocations.where(status: :active) %>
       
-      <%# Room Card %>
-      <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-6 rounded-3xl shadow-xl transition hover:bg-white/15">
+      <%# Ghost Room Card %>
+      <div class="bg-black/20 backdrop-blur-md border border-white/10 p-6 rounded-3xl shadow-xl hover:bg-black/30 transition">
+        
+        <%# Room Header & Status %>
         <div class="flex justify-between items-start mb-4">
           <h2 class="text-2xl font-bold text-white">Room <%= room.room_number %></h2>
-          <span class="px-3 py-1 rounded-full text-xs font-bold <%= active_allocs.count < 2 ? 'bg-green-500/50 text-white' : 'bg-red-500/50 text-white' %>">
+          <span class="px-3 py-1 rounded-full text-xs font-bold <%= active_allocs.count < 2 ? 'bg-green-500/20 border border-green-500/50 text-green-100' : 'bg-red-500/20 border border-red-500/50 text-red-100' %>">
             <%= active_allocs.count %>/2 Occupied
           </span>
         </div>
 
+        <%# Student List %>
         <div class="mb-6">
           <% if active_allocs.any? %>
             <ul class="space-y-1">
@@ -25,25 +35,34 @@
               <% end %>
             </ul>
           <% else %>
-            <p class="text-white/50 italic">Room is empty</p>
+            <p class="text-white/50 italic text-sm">Room is empty</p>
           <% end %>
         </div>
 
-        <%# Actions %>
+        <%# Action Area %>
         <div class="border-t border-white/10 pt-4">
           <% if active_allocs.count < 2 %>
-            <%= form_with model: Allocation.new, class: "flex items-center space-x-2" do |f| %>
+            <%# URL updated to allocations_path %>
+            <%= form_with model: Allocation.new, url: allocations_path, class: "flex items-center space-x-2" do |f| %>
               <%= f.hidden_field :room_id, value: room.id %>
+              
               <% available_students = User.where(role: :student).where.not(id: Allocation.where(status: :active).select(:student_id)) %>
-              <%= f.collection_select :student_id, available_students, :id, :name, { prompt: "Select Student" }, { class: "bg-white/10 border border-white/20 rounded-lg p-2 text-white text-sm w-full" } %>
+              
+              <%= f.collection_select :student_id, available_students, :id, :name, { prompt: "Select Student" }, { class: "bg-black/20 border border-white/20 rounded-lg p-2 text-white text-sm w-full" } %>
               <%= f.submit "Allocate", class: "bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition" %>
             <% end %>
           <% end %>
 
-          <div class="mt-3 space-y-1">
-            <% active_allocs.each do |alloc| %>
-              <%= button_to "Check Out #{alloc.student&.name}", allocation_path(alloc), method: :patch, class: "text-red-300 hover:text-red-100 text-xs font-medium underline" %>
-            <% end %>
+          <div class="mt-3 space-y-1 flex justify-between items-center">
+            <%# Existing Checkout Buttons %>
+            <div class="space-y-1">
+              <% active_allocs.each do |alloc| %>
+                <%= button_to "Check Out #{alloc.student&.name}", allocation_path(alloc), method: :patch, class: "text-red-300 hover:text-red-100 text-xs font-medium underline" %>
+              <% end %>
+            </div>
+
+            <%# New Delete Button %>
+            <%= button_to "Delete Room", room_path(room), method: :delete, data: { turbo_confirm: "Are you sure? This cannot be undone." }, class: "text-red-500 hover:text-red-300 text-xs font-medium underline" %>
           </div>
         </div>
       </div>

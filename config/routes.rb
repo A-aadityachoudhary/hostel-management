@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "rooms/new"
+  get "rooms/create"
   get "staff_dashboard/index"
   get "profile/show"
   get "admin/index"
@@ -19,4 +21,8 @@ Rails.application.routes.draw do
   get 'staff/dashboard', to: 'staff_dashboard#index', as: :staff_dashboard
   # config/routes.rb
   resources :tasks, only: [:index, :create, :update, :destroy]
+
+  resources :blocks
+  resources :rooms
+  resources :allocations
 end
