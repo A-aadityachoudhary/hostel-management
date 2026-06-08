@@ -1,0 +1,20 @@
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-black/20 rounded-2xl border border-white/10">
+  <h2 class="text-xl font-bold text-white mb-4">Issue: <%= @complaint.message %></h2>
+  
+  <%# Chat History %>
+  <div class="space-y-4 mb-8">
+    <% @comments.each do |comment| %>
+      <div class="flex <%= comment.user.admin? ? 'justify-end' : 'justify-start' %>">
+        <div class="p-4 rounded-xl max-w-[80%] <%= comment.user.admin? ? 'bg-pink-600 text-white' : 'bg-white/10 text-white' %>">
+          <p class="text-[10px] opacity-70"><%= comment.user.name %></p>
+          <p><%= comment.body %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <%# Reply Input %>
+  <%= form_with model: [@complaint, @comment] do |f| %>
+    <%= f.text_area :body, placeholder: "Type a message...", class: "w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white" %>
+    <%= f.submit "Send", class: "mt-2 bg-white text-black px-6 py-2 rounded-lg font-bold cursor-pointer" %>
+  <% end %>
+</div>

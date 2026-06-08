@@ -1,6 +1,6 @@
 class Room < ApplicationRecord
   belongs_to :block
-  has_many :allocations
+  has_many :allocations, dependent: :restrict_with_error
   validates :room_number, presence: true, uniqueness: { scope: :block_id }
   validates :capacity, numericality: { greater_than: 0 }
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_105225) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_165053) do
   create_table "allocations", force: :cascade do |t|
     t.date "check_in_date"
     t.date "check_out_date"
@@ -28,6 +28,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_105225) do
     t.string "location"
     t.string "name"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.text "body"
+    t.integer "complaint_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["complaint_id"], name: "index_comments_on_complaint_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "complaints", force: :cascade do |t|
@@ -69,6 +79,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_105225) do
   end
 
   add_foreign_key "allocations", "rooms"
+  add_foreign_key "comments", "complaints"
+  add_foreign_key "comments", "users"
   add_foreign_key "complaints", "users"
   add_foreign_key "rooms", "blocks"
 end

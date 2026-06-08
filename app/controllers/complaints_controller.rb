@@ -20,10 +20,23 @@ class ComplaintsController < ApplicationController
   def create
     @complaint = current_user.complaints.build(complaint_params)
     if @complaint.save
-      redirect_to complaints_path, notice: "Complaint submitted successfully."
+      redirect_to new_complaint_path, notice: "Complaint submitted successfully."
     else
-      render :new, alert: "Failed to submit complaint."
+      # We must set @complaints here so the view has data to iterate over
+      @complaints = current_user.complaints.order(created_at: :desc)
+      flash.now[:alert] = "Failed to submit complaint."
+      render :new
     end
+  end
+
+  def show
+    @complaint = Complaint.find(params[:id])
+    unless current_user.admin? || @complaint.user_id == current_user.id
+      redirect_to complaints_path, alert: "Access Denied."
+      return
+    end
+    @comments = @complaint.comments.order(created_at: :asc)
+    @comment = Comment.new
   end
 
   # This handles the Admin's reply

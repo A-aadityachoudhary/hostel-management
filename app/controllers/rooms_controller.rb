@@ -14,8 +14,13 @@ class RoomsController < ApplicationController
 
   def destroy
     @room = Room.find(params[:id])
-    @room.destroy
-    redirect_to admin_index_path, notice: "Room deleted successfully."
+    
+    if @room.destroy
+      redirect_to rooms_path, notice: "Room deleted successfully."
+    else
+      # This catches the restriction and shows a nice message instead of a 500 error
+      redirect_to rooms_path, alert: "Cannot delete room: It has active allocations. Please remove them first."
+    end
   end
 
   private

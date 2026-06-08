@@ -29,4 +29,7 @@ Rails.application.routes.draw do
   resources :rooms
   resources :allocations
   resources :complaints, only: [:index, :new, :create, :destroy, :update]
+  resources :complaints do
+    resources :comments, only: [:create]
+  end
 end
