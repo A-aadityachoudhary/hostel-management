@@ -34,7 +34,7 @@ Ensure you have the following installed on your machine:
 
 1. Clone the repository:
 ```bash
-git clone [YOUR_REPOSITORY_URL]
+git clone git@github.com:A-aadityachoudhary/hostel-management.git
 cd hostel-management
 
 ```
