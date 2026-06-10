@@ -1,19 +1,19 @@
 class StaffDashboardController < ApplicationController
-  # This now calls the method we defined in ApplicationController
-  before_action :require_login
-  before_action :authorize_staff_or_admin!
+  # 1. Devise handles login
+  before_action :authenticate_user!
+  
+  # 2. CanCanCan handles authorization
+  # We use :read for the dashboard, mapping to the ability definition
+  before_action :authorize_dashboard
 
   def index
-    # Fetch only tasks assigned to this specific staff member
-    @my_tasks = Task.where(staff_id: current_user.id).order(created_at: :desc)
+    # Filter tasks using the current_user object provided by Devise
+    @tasks = Task.where(staff: current_user).order(created_at: :desc)
   end
 
   private
 
-  def authorize_staff_or_admin!
-    # Ensure the user has the 'staff' or 'admin' role
-    unless current_user&.staff? || current_user&.admin?
-      redirect_to root_path, alert: "Access denied. Only staff can view this dashboard."
-    end
+  def authorize_dashboard
+    authorize! :read, :staff_dashboard
   end
 end

@@ -1,29 +1,18 @@
 class ApplicationController < ActionController::Base
-  helper_method :current_user, :logged_in?
+  # 1. Enforce authorization globally for all controllers
+  check_authorization unless: :devise_controller?
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
-  def current_user
-    @current_user ||= User.find(session[:user_id]) if session[:user_id]
-  rescue ActiveRecord::RecordNotFound
-    session[:user_id] = nil
+  # 2. Handle unauthorized access (CanCanCan access denied error)
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_path, alert: "You are not authorized to perform this action."
   end
 
-  def logged_in?
-    !!current_user
-  end
+  protected
 
-  # Added this to prevent the NoMethodError in your StaffDashboardController
-  def require_login
-    unless logged_in?
-      flash[:alert] = "You must be logged in to access this page."
-      redirect_to login_path
-    end
-  end
-
-  def authorize_admin!
-    # Ensure user is logged in AND is an admin
-    unless current_user&.admin?
-      flash[:alert] = "You must be an admin to access this."
-      redirect_to login_path
-    end
+  def configure_permitted_parameters
+    # Permit :name and :role for registration
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :role])
+    
   end
 end

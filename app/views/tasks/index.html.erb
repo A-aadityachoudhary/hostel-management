@@ -1,50 +1,64 @@
-<div class="max-w-6xl mx-auto p-6">
-  <h1 class="text-4xl font-bold mb-10 text-white">Staff Task Management</h1>
+<div class="max-w-6xl mx-auto p-4 md:p-6">
+  <h1 class="text-3xl md:text-4xl font-bold mb-8 text-white">Staff Task Management</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  <%# Use flex-col for mobile, grid for desktop %>
+  <div class="flex flex-col md:grid md:grid-cols-3 gap-8">
+    
+    <%# Sidebar: Staff List %>
     <div class="md:col-span-1">
       <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-6 rounded-3xl shadow-xl">
-        <h2 class="text-xl font-bold mb-6 text-white">Select Staff Member</h2>
-        <% @staff_members.each do |staff| %>
-          <%= link_to staff.name, tasks_path(staff_id: staff.id), 
-              class: "block p-4 mb-3 rounded-2xl transition #{ @selected_staff == staff ? 'bg-pink-600 text-white shadow-lg' : 'bg-white/5 text-white/80 hover:bg-white/15' }" %>
-        <% end %>
+        <h2 class="text-xl font-bold mb-6 text-white">Select Staff</h2>
+        <div class="flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-3 pb-2 md:pb-0">
+          <% @staff_members.each do |staff| %>
+            <%= link_to staff.name, tasks_path(staff_id: staff.id), 
+                class: "block p-4 rounded-2xl transition whitespace-nowrap #{ @selected_staff == staff ? 'bg-pink-600 text-white shadow-lg' : 'bg-white/5 text-white/80 hover:bg-white/15' }" %>
+          <% end %>
+        </div>
       </div>
     </div>
 
+    <%# Main Content: Task Area %>
     <div class="md:col-span-2">
       <% if @selected_staff %>
-        <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-3xl shadow-xl">
+        <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-6 md:p-8 rounded-3xl shadow-xl">
           <h2 class="text-2xl font-bold mb-6 text-white">Tasks for <%= @selected_staff.name %></h2>
           
-          <%# Add New Task Form %>
-          <%= form_with model: @task, class: "mb-8 bg-white/5 p-6 rounded-2xl border border-white/5" do |f| %>
-            <%= f.hidden_field :staff_id %>
-            <div class="flex gap-4">
-              <%= f.text_field :title, placeholder: "New task title...", required: true, class: "flex-grow bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-500" %>
-              <%= f.submit "Assign Task", class: "bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-xl font-bold transition" %>
-            </div>
+          <% if can? :create, Task %>
+            <%= form_with model: @task, class: "mb-8 bg-white/5 p-4 md:p-6 rounded-2xl border border-white/5" do |f| %>
+              <%= f.hidden_field :staff_id, value: @selected_staff.id %>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <%= f.text_field :title, placeholder: "New task title...", required: true, class: "flex-grow bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-500" %>
+                <%= f.submit "Assign", class: "bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-xl font-bold transition cursor-pointer" %>
+              </div>
+            <% end %>
           <% end %>
 
-          <%# Task List %>
           <div class="space-y-4">
             <% @tasks.each do |task| %>
-              <div class="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center justify-between">
-                <span class="text-white font-medium"><%= task.title %></span>
-                <div class="flex items-center gap-3">
-                  <%= form_with model: task, class: "flex gap-2" do |f| %>
-                    <%= f.select :status, Task.statuses.keys.map { |s| [s.humanize, s] }, {}, { class: "bg-white/10 border border-white/20 rounded-lg p-2 text-white text-sm" } %>
-                    <%= f.submit "Update", class: "bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-lg text-sm transition" %>
-                  <% end %>
-                  <%= button_to "Delete", task_path(task), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "text-red-300 hover:text-red-100 text-sm font-bold" %>
+              <% if can? :read, task %>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <span class="text-white font-medium w-full sm:w-auto"><%= task.title %></span>
+                  
+                  <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                    <% if can? :update, task %>
+                      <%= form_with model: task, class: "flex gap-2" do |f| %>
+                        <%= f.select :status, Task.statuses.keys.map { |s| [s.humanize, s] }, {}, { class: "bg-white/10 border border-white/20 rounded-lg p-2 text-white text-sm" } %>
+                        <%= f.submit "Update", class: "bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-lg text-sm transition cursor-pointer" %>
+                      <% end %>
+                    <% end %>
+                    
+                    <% if can? :destroy, task %>
+                      <%= button_to "Delete", task_path(task), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "text-red-300 hover:text-red-100 text-sm font-bold" %>
+                    <% end %>
+                  </div>
                 </div>
-              </div>
+              <% end %>
             <% end %>
           </div>
         </div>
       <% else %>
-        <div class="h-full flex items-center justify-center bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-10">
-          <p class="text-white/50 text-center text-lg">Select a staff member from the list to manage their tasks.</p>
+        <div class="min-h-[300px] flex items-center justify-center bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-10">
+          <p class="text-white/50 text-center text-lg">Select a staff member to manage tasks.</p>
         </div>
       <% end %>
     </div>
