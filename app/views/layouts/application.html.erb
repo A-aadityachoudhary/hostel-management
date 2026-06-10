@@ -9,49 +9,54 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="font-sans antialiased min-h-screen">
+  <body class="font-sans antialiased min-h-screen bg-slate-900 text-white">
     
-    <nav class="bg-transparent p-6 text-white">
-      <div class="container mx-auto flex items-center justify-between">
+    <nav class="p-6">
+      <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <%= link_to "HostelSystem", root_path, class: "font-bold text-2xl tracking-tight hover:opacity-80 transition" %>
-
-        <div class="flex items-center space-x-8 text-lg font-medium">
-          <% if logged_in? %>
+    
+        <%# Changed to flex-wrap to allow items to move to a new line on small screens %>
+        <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-sm md:text-lg font-medium">
+          <% if user_signed_in? %>
             <%= link_to "Home", root_path, class: "hover:text-pink-200 transition" %>
-
-            <% if current_user.admin? %>
-              <%= link_to "Admin Dashboard", admin_index_path, class: "hover:text-pink-200 transition" %>
-              <%= link_to "Manage Tasks", tasks_path, class: "hover:text-pink-200 transition" %>
-              <%= link_to "View Complaints", complaints_path, class: "hover:text-pink-200 transition " %>
-            <% elsif current_user.staff? %>
-              <%= link_to "My Tasks", staff_dashboard_path, class: "hover:text-pink-200 transition" %>
-              <%= link_to "File Complaint", new_complaint_path, class: "hover:text-pink-200 transition" %>
+    
+            <%# Admin Section %>
+            <% if can? :manage, :all %>
+              <%= link_to "Admin", admin_index_path, class: "hover:text-pink-200 transition" %>
+              <%= link_to "Tasks", tasks_path, class: "hover:text-pink-200 transition" %>
+              <%= link_to "Complaints", complaints_path, class: "hover:text-pink-200 transition" %>
             <% end %>
-
+            
+            <%# Staff Section %>
+            <% if current_user.staff? && can?(:read, :staff_dashboard) %>
+              <%= link_to "Staff", staff_dashboard_path, class: "hover:text-pink-200 transition" %>
+            <% end %>
+    
+            <%# Complaint Section %>
+            <% if can? :create, Complaint %>
+              <%= link_to "Complaint", complaints_path, class: "hover:text-pink-200 transition" %>
+            <% end %>
+    
+            <%# Student Section %>
             <% if current_user.student? %>
               <%= link_to "My Room", my_room_path, class: "hover:text-pink-200 transition" %>
-              <%= link_to "File Complaint", new_complaint_path, class: "hover:text-pink-200 transition" %>
             <% end %>
-
-            <%= button_to "Logout", logout_path, method: :delete, class: "bg-white/20 px-5 py-2 rounded-full hover:bg-white/30 transition" %>
+    
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "bg-white/10 px-4 py-1.5 rounded-full hover:bg-white/20 transition text-xs md:text-sm" %>
+          
           <% else %>
-            <%= link_to "Login", login_path, class: "hover:text-pink-200 transition" %>
-            <%= link_to "Sign Up", signup_path, class: "bg-pink-600 px-6 py-2 rounded-full hover:bg-pink-700 transition shadow-lg" %>
+            <%= link_to "Login", new_user_session_path, class: "hover:text-pink-200 transition" %>
+            <%= link_to "Sign Up", new_user_registration_path, class: "bg-pink-600 px-5 py-2 rounded-full hover:bg-pink-700 transition shadow-lg text-sm" %>
           <% end %>
         </div>
       </div>
     </nav>
     
-    <%# Fixed container for floating flash messages %>
+    <%# Flash Messages %>
     <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-none">
-      <% if flash[:notice] %>
-        <div class="flash-message pointer-events-auto bg-green-500/80 text-white p-4 rounded-xl shadow-lg mb-2 text-center">
-          <%= flash[:notice] %>
-        </div>
-      <% end %>
-      <% if flash[:alert] %>
-        <div class="flash-message pointer-events-auto bg-red-500/80 text-white p-4 rounded-xl shadow-lg mb-2 text-center">
-          <%= flash[:alert] %>
+      <% flash.each do |type, message| %>
+        <div class="flash-message pointer-events-auto <%= type == 'notice' ? 'bg-green-500/80' : 'bg-red-500/80' %> text-white p-4 rounded-xl shadow-lg mb-2 text-center backdrop-blur-md">
+          <%= message %>
         </div>
       <% end %>
     </div>
@@ -63,7 +68,6 @@
     <script>
       const fadeOutFlash = () => {
         const flashMessages = document.querySelectorAll('.flash-message');
-        
         setTimeout(() => {
           flashMessages.forEach(msg => {
             msg.style.transition = "opacity 0.5s ease";
@@ -72,7 +76,6 @@
           });
         }, 1800);
       };
-
       document.addEventListener("turbo:load", fadeOutFlash);
     </script>
   </body>

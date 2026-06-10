@@ -8,4 +8,8 @@ class Room < ApplicationRecord
     # A room is available if it has no active allocations
     allocations.where(status: :active).count < self.capacity
   end
+
+  def active_allocations_count
+    allocations.where(status: :active).size
+  end
 end

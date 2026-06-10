@@ -1,25 +1,30 @@
 <div class="min-h-[80vh] flex flex-col items-center justify-center p-6 text-white">
   <h1 class="text-5xl font-extrabold mb-12 drop-shadow-lg">Welcome to Hostel Management</h1>
   
-  <%# Ghost Card - using dark transparency and thin borders %>
+  <%# Ghost Card %>
   <div class="bg-black/20 backdrop-blur-md border border-white/10 p-10 rounded-3xl w-full max-w-md text-center shadow-xl">
-    <% if logged_in? %>
+    
+    <%# 1. Use Devise helper: user_signed_in? %>
+    <% if user_signed_in? %>
       <div class="space-y-4">
         <p class="text-2xl font-semibold">Hello, <%= current_user.name %>!</p>
         <p class="text-lg opacity-80">Role: <span class="capitalize font-bold text-pink-300"><%= current_user.role %></span></p>
         
-        <% if current_user.admin? %>
+        <%# 2. Use CanCanCan for cleaner authorization %>
+        <% if can? :manage, :all %>
           <%= link_to "Admin Dashboard", admin_index_path, class: "block bg-pink-600 hover:bg-pink-700 text-white py-3 px-6 rounded-full font-bold transition" %>
         <% end %>
         
-        <%= button_to "Logout", logout_path, method: :delete, class: "w-full bg-black/20 hover:bg-black/40 text-white py-3 px-6 rounded-full transition border border-white/10" %>
+        <%# 3. Use Devise path helper: destroy_user_session_path %>
+        <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "w-full bg-black/20 hover:bg-black/40 text-white py-3 px-6 rounded-full transition border border-white/10" %>
       </div>
     <% else %>
       <div class="space-y-6">
         <p class="text-lg opacity-90">Please log in to manage your hostel allocations.</p>
         
-        <%= link_to "Login", login_path, class: "block bg-pink-600 hover:bg-pink-700 text-white py-3 px-6 rounded-full font-bold transition" %>
-        <%= link_to "Sign Up", signup_path, class: "block bg-black/20 hover:bg-black/40 text-white py-3 px-6 rounded-full font-bold transition border border-white/10" %>
+        <%# 4. Use Devise path helpers %>
+        <%= link_to "Login", new_user_session_path, class: "block bg-pink-600 hover:bg-pink-700 text-white py-3 px-6 rounded-full font-bold transition" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "block bg-black/20 hover:bg-black/40 text-white py-3 px-6 rounded-full font-bold transition border border-white/10" %>
       </div>
     <% end %>
   </div>

@@ -1,21 +1,15 @@
 class Allocation < ApplicationRecord
-  # We remove the association to 'student' and use a standard lookup
-  # This prevents Rails from performing ANY automatic table lookups
-  
+  # Better: Define the association properly
   belongs_to :room
+  belongs_to :student, class_name: 'User', foreign_key: 'student_id'
+  
   after_initialize :set_default_status, if: :new_record?
-  # Just treat student_id as an integer for now
+  
   validates :student_id, presence: true
   validate :user_must_not_have_another_active_allocation, on: :create, if: -> { active? }
+  validate :room_has_capacity, if: -> { active? }
   
   enum :status, { active: 0, inactive: 1 }
-
-  # Helper method to get the user
-  def student
-    User.find(student_id)
-  end
-
-  validate :room_has_capacity, if: -> { active? }
 
   private
 
@@ -24,17 +18,15 @@ class Allocation < ApplicationRecord
   end
 
   def room_has_capacity
-    query = Allocation.where(room_id: room_id, status: :active)
-    query = query.where.not(id: id) if persisted?
-    
-    if query.count >= 2
+    # Using 'count' is fine, but checking 'size' or 'exists?' 
+    # is faster if you just need to know if it hit the limit
+    if room.allocations.where(status: :active).where.not(id: id).count >= 2
       errors.add(:room, "is already full")
     end
   end
 
   def user_must_not_have_another_active_allocation
-    # Check if the same student already has an active allocation
-    if Allocation.where(student_id: student_id, status: :active).exists?
+    if Allocation.where(student_id: student_id, status: :active).where.not(id: id).exists?
       errors.add(:student_id, "is already allocated to another room.")
     end
   end

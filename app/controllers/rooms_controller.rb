@@ -1,10 +1,16 @@
 class RoomsController < ApplicationController
+  # Require user to be logged in
+  before_action :authenticate_user!
+  
+  # Automatically load and authorize the @room resource
+  load_and_authorize_resource
+
   def new
-    @room = Room.new
+    # @room is already initialized by load_and_authorize_resource
   end
 
   def create
-    @room = Room.new(room_params)
+    # @room is already initialized with room_params
     if @room.save
       redirect_to admin_index_path, notice: "Room created successfully."
     else
@@ -13,12 +19,10 @@ class RoomsController < ApplicationController
   end
 
   def destroy
-    @room = Room.find(params[:id])
-    
+    # @room is already loaded and authorized
     if @room.destroy
       redirect_to rooms_path, notice: "Room deleted successfully."
     else
-      # This catches the restriction and shows a nice message instead of a 500 error
       redirect_to rooms_path, alert: "Cannot delete room: It has active allocations. Please remove them first."
     end
   end

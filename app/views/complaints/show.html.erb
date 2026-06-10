@@ -4,23 +4,29 @@
   <%# Chat History %>
   <div class="space-y-4 mb-8">
     <% @comments.each do |comment| %>
-      <%# Check if the comment belongs to the current user %>
-      <% is_current_user = (comment.user_id == current_user.id) %>
-      
-      <div class="flex <%= is_current_user ? 'justify-end' : 'justify-start' %>">
-        <div class="p-4 rounded-xl max-w-[80%] <%= is_current_user ? 'bg-pink-600 text-white' : 'bg-white/10 text-white' %>">
-          <p class="text-[10px] opacity-70">
-            <%= is_current_user ? "You" : comment.user.name %>
-          </p>
-          <p><%= comment.body %></p>
+      <%# Only show comments if the user is authorized to read them %>
+      <% if can? :read, comment %>
+        <% is_current_user = (comment.user_id == current_user.id) %>
+        
+        <div class="flex <%= is_current_user ? 'justify-end' : 'justify-start' %>">
+          <div class="p-4 rounded-xl max-w-[80%] <%= is_current_user ? 'bg-pink-600 text-white' : 'bg-white/10 text-white' %>">
+            <p class="text-[10px] opacity-70">
+              <%= is_current_user ? "You" : comment.user.name %>
+            </p>
+            <p><%= comment.body %></p>
+          </div>
         </div>
-      </div>
+      <% end %>
     <% end %>
   </div>
 
-  <%# Reply Input %>
-  <%= form_with model: [@complaint, @comment] do |f| %>
-    <%= f.text_area :body, rows: 2, placeholder: "Type a message...", class: "w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white focus:ring-2 focus:ring-pink-500 outline-none" %>
-    <%= f.submit "Send", class: "mt-2 bg-white text-black px-6 py-2 rounded-lg font-bold cursor-pointer hover:bg-gray-200 transition" %>
+  <%# Reply Input: Only show form if the user is authorized to create a comment %>
+  <% if can? :create, Comment.new(complaint: @complaint) %>
+    <%= form_with model: [@complaint, @comment] do |f| %>
+      <%= f.text_area :body, rows: 2, placeholder: "Type a message...", class: "w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white focus:ring-2 focus:ring-pink-500 outline-none" %>
+      <%= f.submit "Send", class: "mt-2 bg-white text-black px-6 py-2 rounded-lg font-bold cursor-pointer hover:bg-gray-200 transition" %>
+    <% end %>
+  <% else %>
+    <p class="text-white/40 text-sm italic">You are not authorized to reply to this complaint.</p>
   <% end %>
 </div>

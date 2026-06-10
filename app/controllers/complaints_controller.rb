@@ -1,58 +1,51 @@
 class ComplaintsController < ApplicationController
-  before_action :require_login
-  # Only admins can delete; admins and owners of the complaint can view
-  before_action :ensure_admin!, only: [:destroy]
+  before_action :authenticate_user!
+  
+  # load_and_authorize_resource will handle @complaint and @complaints
+  load_and_authorize_resource
 
   def index
-    if current_user.admin?
-      @complaints = Complaint.all.order(created_at: :desc)
+    # CanCanCan has already scoped @complaints based on Ability.rb
+    @complaints = @complaints.order(created_at: :desc)
+    
+    # We build a new one for the 'new' form in case you want to show 
+    # the form on the same page as the history
+    @complaint = Complaint.new 
+  end
+
+  def create
+    # Use the strong params method here
+    @complaint.user = current_user
+    if @complaint.save
+      redirect_to complaints_path, notice: "Complaint submitted successfully."
     else
-      # Students/Staff only see their own complaints
-      @complaints = current_user.complaints.order(created_at: :desc)
+      # If create fails, re-load the index data to show the list again
+      @complaints = Complaint.accessible_by(current_ability).order(created_at: :desc)
+      render :index, status: :unprocessable_entity
     end
   end
 
   def new
-    @complaint = Complaint.new
-    @complaints = current_user.complaints.order(created_at: :desc)
-  end
-
-  def create
-    @complaint = current_user.complaints.build(complaint_params)
-    if @complaint.save
-      redirect_to new_complaint_path, notice: "Complaint submitted successfully."
-    else
-      # We must set @complaints here so the view has data to iterate over
-      @complaints = current_user.complaints.order(created_at: :desc)
-      flash.now[:alert] = "Failed to submit complaint."
-      render :new
-    end
-  end
+  # Build the new complaint for the form
+  @complaint = Complaint.new
+  # Fetch history so the view has something to display
+  @complaints = Complaint.accessible_by(current_ability).order(created_at: :desc)
+end
 
   def show
-    @complaint = Complaint.find(params[:id])
-    unless current_user.admin? || @complaint.user_id == current_user.id
-      redirect_to complaints_path, alert: "Access Denied."
-      return
-    end
     @comments = @complaint.comments.order(created_at: :asc)
     @comment = Comment.new
   end
 
-  # This handles the Admin's reply
   def update
-    @complaint = Complaint.find(params[:id])
-    
-    # Only admins should be able to update/reply to a complaint
-    if current_user.admin? && @complaint.update(reply_params)
-      redirect_to complaints_path, notice: "Reply sent successfully."
+    if @complaint.update(reply_params)
+      redirect_to complaint_path(@complaint), notice: "Reply sent successfully."
     else
-      redirect_to complaints_path, alert: "Failed to send reply or unauthorized."
+      redirect_to complaint_path(@complaint), alert: "Failed to send reply."
     end
   end
   
   def destroy
-    @complaint = Complaint.find(params[:id])
     @complaint.destroy
     redirect_to complaints_path, notice: "Complaint deleted."
   end
@@ -63,20 +56,7 @@ class ComplaintsController < ApplicationController
     params.require(:complaint).permit(:message)
   end
 
-  # Allow the reply field to be updated
   def reply_params
-    params.require(:complaint).permit(:reply)
-  end
-
-  def require_login
-    unless session[:user_id]
-      redirect_to login_path, alert: "You must be logged in to do that."
-    end
-  end
-
-  def ensure_admin!
-    unless current_user&.admin?
-      redirect_to complaints_path, alert: "Access Denied."
-    end
+    params.require(:complaint).permit(:reply) # Ensure this matches your form field
   end
 end

@@ -2,29 +2,33 @@
   <div class="bg-black/20 backdrop-blur-md border border-white/10 p-8 rounded-3xl shadow-2xl">
     <h1 class="text-3xl font-bold text-white mb-6">Create New Room</h1>
 
-    <%= form_with model: @room, url: rooms_path, class: "space-y-6" do |f| %>
-      
-      <%# Room Number %>
-      <div>
-        <%= f.label :room_number, class: "block text-white/80 font-medium mb-2" %>
-        <%= f.text_field :room_number, class: "w-full bg-black/20 border border-white/20 rounded-xl p-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500 transition", placeholder: "e.g., 101" %>
-      </div>
+    <%# Check if the user is authorized to create rooms before rendering the form %>
+    <% if can? :create, Room %>
+      <%= form_with model: @room, class: "space-y-6" do |f| %>
+        
+        <div>
+          <%= f.label :room_number, class: "block text-white/80 font-medium mb-2" %>
+          <%= f.text_field :room_number, class: "w-full bg-black/20 border border-white/20 rounded-xl p-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500 transition", placeholder: "e.g., 101" %>
+        </div>
 
-      <%# Block Selection %>
-      <div>
-        <%= f.label :block_id, "Hostel Block", class: "block text-white/80 font-medium mb-2" %>
-        <%= f.collection_select :block_id, Block.all, :id, :name, { prompt: "Select a block" }, { class: "w-full bg-black/20 border border-white/20 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 transition" } %>
-      </div>
+        <div>
+          <%= f.label :block_id, "Hostel Block", class: "block text-white/80 font-medium mb-2" %>
+          <%# Using collection_select with standard Rails parameters %>
+          <%= f.collection_select :block_id, Block.all, :id, :name, { prompt: "Select a block" }, { class: "w-full bg-black/20 border border-white/20 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 transition" } %>
+        </div>
 
-      <%# Capacity %>
-      <div>
-        <%= f.label :capacity, class: "block text-white/80 font-medium mb-2" %>
-        <%= f.number_field :capacity, value: 2, class: "w-full bg-black/20 border border-white/20 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 transition" %>
-      </div>
+        <div>
+          <%= f.label :capacity, class: "block text-white/80 font-medium mb-2" %>
+          <%= f.number_field :capacity, value: 2, class: "w-full bg-black/20 border border-white/20 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 transition" %>
+        </div>
 
-      <%# Submit Button %>
-      <div class="pt-4">
-        <%= f.submit "Create Room", class: "w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-full transition shadow-lg cursor-pointer" %>
+        <div class="pt-4">
+          <%= f.submit "Create Room", class: "w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-full transition shadow-lg cursor-pointer" %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="text-center py-10">
+        <p class="text-white/60">You are not authorized to create new rooms.</p>
       </div>
     <% end %>
 
