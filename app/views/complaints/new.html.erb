@@ -8,6 +8,10 @@
         <%= f.label :message, "What is your issue?", class: "text-white/60 text-sm mb-2 block" %>
         <%= f.text_area :message, rows: 4, placeholder: "Describe your issue here...", class: "w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white focus:ring-2 focus:ring-pink-500 outline-none" %>
       </div>
+      <div>
+        <%= f.label :image, "Attach a photo (optional)", class: "text-white/60 text-sm" %>
+        <%= f.file_field :image, class: "block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-600 file:text-white hover:file:bg-pink-700" %>
+      </div>
       <%= f.submit "Submit Complaint", class: "bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg font-bold transition cursor-pointer" %>
     <% end %>
   </div>

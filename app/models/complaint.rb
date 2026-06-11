@@ -5,4 +5,7 @@ class Complaint < ApplicationRecord
   has_many :comments, -> { order(created_at: :asc) }, dependent: :destroy
   
   validates :message, presence: true
+  has_one_attached :image
+  validates :image, content_type: ['image/png', 'image/jpeg'],
+        size: { less_than: 5.megabytes, message: 'is too large' }
 end

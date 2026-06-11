@@ -53,7 +53,7 @@ end
   private
 
   def complaint_params
-    params.require(:complaint).permit(:message)
+    params.require(:complaint).permit(:message, :image)
   end
 
   def reply_params

@@ -68,3 +68,5 @@ end
 gem "tailwindcss-rails", "~> 4.4"
 gem 'devise'
 gem 'cancancan'
+gem 'image_processing', '~> 1.2'
+gem 'active_storage_validations'

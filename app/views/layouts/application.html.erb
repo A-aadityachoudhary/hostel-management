@@ -34,7 +34,7 @@
     
             <%# Complaint Section %>
             <% if can? :create, Complaint %>
-              <%= link_to "Complaint", complaints_path, class: "hover:text-pink-200 transition" %>
+              <%= link_to "Complaint", new_complaint_path, class: "hover:text-pink-200 transition" %>
             <% end %>
     
             <%# Student Section %>
