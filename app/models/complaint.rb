@@ -8,4 +8,8 @@ class Complaint < ApplicationRecord
   has_one_attached :image
   validates :image, content_type: ['image/png', 'image/jpeg'],
         size: { less_than: 5.megabytes, message: 'is too large' }
+
+  def thumbnail
+    image.variant(resize_to_limit: [150, 150])
+  end
 end

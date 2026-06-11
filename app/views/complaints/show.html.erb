@@ -5,7 +5,7 @@
   <% if @complaint.image.attached? %>
     <div class="mb-6">
       <p class="text-white/60 text-xs mb-2">Attached Photo:</p>
-      <%= image_tag @complaint.image, class: "rounded-lg border border-white/20", style: "max-width: 100%; height: auto;" %>
+      <%= image_tag @complaint.image.variant(resize_to_limit: [600, 600]), class: "rounded-lg" %>
     </div>
   <% end %>
   
